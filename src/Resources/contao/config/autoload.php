@@ -14,5 +14,5 @@
  * Register the templates
  */
 TemplateLoader::addFiles([
-    'be_cfg_link_registry_widget' => 'src/Codefog/LinkRegistryBundle/Resources/contao/templates/widgets',
+    'be_cfg_link_registry_widget' => 'vendor/codefog/contao-link-registry/Codefog/LinkRegistryBundle/Resources/contao/templates/widgets',
 ]);
