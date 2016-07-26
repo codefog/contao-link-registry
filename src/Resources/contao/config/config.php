@@ -15,7 +15,6 @@
  */
 $GLOBALS['BE_MOD']['design']['cfg_link_registry'] = [
     'tables' => ['tl_cfg_link_registry'],
-    'icon'   => 'bundles/codefoglinkregistry/link-registries.png',
 ];
 
 /**
