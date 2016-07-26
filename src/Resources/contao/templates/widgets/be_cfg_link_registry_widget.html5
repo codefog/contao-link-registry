@@ -1,0 +1,44 @@
+<?php $GLOBALS['TL_CSS'][] = 'bundles/codefoglinkregistry/widget.min.css'; ?>
+<?php if ($this->options): ?>
+    <table class="cfg-link-registry-widget">
+        <thead>
+        <tr>
+            <th><?= $GLOBALS['TL_LANG']['MSC']['cfg_link_registry.widget.type'] ?></th>
+            <th><?= $GLOBALS['TL_LANG']['MSC']['cfg_link_registry.widget.link'] ?></th>
+            <th><?= $GLOBALS['TL_LANG']['MSC']['cfg_link_registry.widget.title'] ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($this->options as $option): ?>
+            <tr>
+                <td>
+                    <div>
+                        <p><?= $option['type']['label'] ?></p>
+
+                        <?php if ($option['type']['hint']): ?>
+                            <p class="tl_help tl_tip"><?= $option['type']['hint'] ?></p>
+                        <?php endif; ?>
+                    </div>
+                </td>
+                <td>
+                    <input type="text"
+                           id="<?= $option['link']['id'] ?>"
+                           name="<?= $option['link']['name'] ?>" class="tl_text_2"
+                           value="<?= specialchars($option['link']['value']) ?>">
+                    <a href="<?= ampersand($option['picker']['url']) ?>"
+                       title="<?= specialchars($GLOBALS['TL_LANG']['MSC']['pagepicker']) ?>"
+                       onclick="Backend.getScrollOffset();Backend.openModalSelector({'width':768,'title':'<?= specialchars($this->picker['title']) ?>','url':this.href,'id':'<?= $this->picker['id'] ?>','tag':'<?= $option['picker']['tag'] ?>','self':this});return false">
+                        <?= $this->picker['image'] ?>
+                    </a>
+                </td>
+                <td>
+                    <input type="text" name="<?= $option['title']['name'] ?>" class="tl_text_2"
+                           value="<?= specialchars($option['title']['value']) ?>">
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php else: ?>
+    <p class="empty"><?= $GLOBALS['TL_LANG']['MSC']['cfg_link_registry.widget.empty'] ?></p>
+<?php endif; ?>

@@ -1,0 +1,28 @@
+{
+    "name": "codefog/contao-link-registry",
+    "description": "link-registry extension for Contao Open Source CMS",
+    "keywords": ["contao", "link", "registry"],
+    "type": "contao-module",
+    "license": "LGPL",
+    "authors": [
+        {
+            "name": "Codefog",
+            "homepage": "http://codefog.pl"
+        },
+        {
+            "name": "Kamil Kuzminski",
+            "email":"kamil.kuzminski@codefog.pl",
+            "homepage": "http://codefog.pl",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "contao/core-bundle":"~4.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codefog\\LinkRegistryBundle\\": "src/"
+        }
+    }
+}
