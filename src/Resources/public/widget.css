@@ -1,19 +1,24 @@
 .cfg-link-registry-widget {
     margin: 10px 0;
+    width: 100%;
 }
 .cfg-link-registry-widget td {
     padding: 4px 20px 4px 0;
     border-bottom: 1px solid #ddd;
     vertical-align: middle;
 }
-.cfg-link-registry-widget tr:last-child td {
-    border-bottom: none;
-}
 .cfg-link-registry-widget tr td:first-child div {
     max-width: 300px;
 }
 .cfg-link-registry-widget tr td:first-child p {
     margin-bottom: 0;
+}
+.cfg-link-registry-widget td input {
+    width: calc(100% - 30px);
+}
+.cfg-link-registry-widget td a {
+    position: relative;
+    top: 8px;
 }
 .cfg-link-registry-widget p.empty {
     margin-bottom: 4px;
