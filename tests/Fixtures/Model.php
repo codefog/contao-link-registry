@@ -8,7 +8,13 @@
  * @license    MIT
  */
 
-/**
- * Backend modules.
- */
-$GLOBALS['TL_LANG']['MOD']['cfg_link_registry'] = ['Link registries', 'Create and manage link registries.'];
+class Model
+{
+    public function __get($key)
+    {
+    }
+
+    public function findByPk()
+    {
+    }
+}

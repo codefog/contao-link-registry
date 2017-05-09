@@ -1,19 +1,8 @@
 services:
-    codefog_link_registry.data_container:
-        class: Codefog\LinkRegistryBundle\DataContainer
-        arguments:
-            - '@database_connection'
-            - '@contao.framework'
-            - '@codefog_link_registry.registry'
-
-    codefog_link_registry.insert_tags:
-        class: Codefog\LinkRegistryBundle\EventListener\InsertTagsListener
-        arguments:
-            - '@codefog_link_registry.registry'
-
-    codefog_link_registry.registry:
+    cfg_link_registry:
         class: Codefog\LinkRegistryBundle\LinkRegistry
         arguments:
-            - '@database_connection'
             - '@contao.framework'
-            - '%codefog_link_registry.types%'
+            - '@database_connection'
+            - '@security.token_storage'
+            - '%cfg_link_registry.types%'

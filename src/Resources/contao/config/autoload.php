@@ -1,17 +1,15 @@
 <?php
 
-/**
- * link-registry extension for Contao Open Source CMS
+/*
+ * Link Registry Bundle for Contao Open Source CMS.
  *
- * Copyright (C) 2011-2016 Codefog
- *
- * @author  Codefog <http://codefog.pl>
- * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
- * @license LGPL
+ * @copyright  Copyright (c) 2017, Codefog
+ * @author     Codefog <https://codefog.pl>
+ * @license    MIT
  */
 
 /**
- * Register the templates
+ * Register the templates.
  */
 TemplateLoader::addFiles([
     'be_cfg_link_registry_widget' => 'vendor/codefog/contao-link-registry/src/Resources/contao/templates/widgets',

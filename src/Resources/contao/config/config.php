@@ -1,28 +1,26 @@
 <?php
 
-/**
- * link-registry extension for Contao Open Source CMS
+/*
+ * Link Registry Bundle for Contao Open Source CMS.
  *
- * Copyright (C) 2011-2016 Codefog
- *
- * @author  Codefog <http://codefog.pl>
- * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
- * @license LGPL
+ * @copyright  Copyright (c) 2017, Codefog
+ * @author     Codefog <https://codefog.pl>
+ * @license    MIT
  */
 
 /**
- * Backend modules
+ * Backend modules.
  */
 $GLOBALS['BE_MOD']['design']['cfg_link_registry'] = [
     'tables' => ['tl_cfg_link_registry'],
 ];
 
-/**
+/*
  * Backend form field
  */
-$GLOBALS['BE_FFL']['cfg_link_registry'] = 'Codefog\LinkRegistryBundle\LinkRegistryWidget';
+$GLOBALS['BE_FFL']['cfg_link_registry'] = 'Codefog\LinkRegistryBundle\Widget\LinkRegistryWidget';
 
-/**
+/*
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['codefog_link_registry.insert_tags', 'replace'];
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['cfg_link_registry.insert_tags', 'onReplace'];

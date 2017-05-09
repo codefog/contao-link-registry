@@ -8,7 +8,8 @@
  * @license    MIT
  */
 
-/**
- * Backend modules.
- */
-$GLOBALS['TL_LANG']['MOD']['cfg_link_registry'] = ['Link registries', 'Create and manage link registries.'];
+namespace Codefog\LinkRegistryBundle\Exception;
+
+class MissingRegistryException extends \RuntimeException
+{
+}

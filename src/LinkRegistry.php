@@ -1,35 +1,59 @@
 <?php
 
-/**
- * link-registry extension for Contao Open Source CMS
+declare(strict_types=1);
+
+/*
+ * Link Registry Bundle for Contao Open Source CMS.
  *
- * Copyright (C) 2011-2016 Codefog
- *
- * @author  Codefog <http://codefog.pl>
- * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
- * @license LGPL
+ * @copyright  Copyright (c) 2017, Codefog
+ * @author     Codefog <https://codefog.pl>
+ * @license    MIT
  */
 
 namespace Codefog\LinkRegistryBundle;
 
+use Codefog\LinkRegistryBundle\Exception\InvalidEntryException;
+use Codefog\LinkRegistryBundle\Exception\InvalidTypeException;
+use Codefog\LinkRegistryBundle\Exception\MissingRegistryException;
+use Codefog\LinkRegistryBundle\Exception\MissingRootPageException;
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Contao\FrontendUser;
 use Contao\PageModel;
+use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class LinkRegistry
 {
     /**
+     * Cache.
+     *
+     * @var array
+     */
+    private $cache = [];
+
+    /**
+     * Database connection.
+     *
      * @var Connection
      */
     private $db;
 
     /**
+     * Contao framework.
+     *
      * @var ContaoFrameworkInterface
      */
     private $framework;
 
     /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    /**
+     * Types.
+     *
      * @var array
      */
     private $types;
@@ -39,279 +63,218 @@ class LinkRegistry
      *
      * @param Connection               $db
      * @param ContaoFrameworkInterface $framework
+     * @param TokenStorageInterface    $tokenStorage
      * @param array                    $types
      */
-    public function __construct(Connection $db, ContaoFrameworkInterface $framework, array $types)
-    {
-        $this->db        = $db;
+    public function __construct(
+        Connection $db,
+        ContaoFrameworkInterface $framework,
+        TokenStorageInterface $tokenStorage,
+        array $types
+    ) {
+        $this->db = $db;
         $this->framework = $framework;
-        $this->types     = $types;
+        $this->tokenStorage = $tokenStorage;
+        $this->types = $types;
     }
 
     /**
-     * Get the types
+     * Get the entry.
      *
-     * @return array
+     * @param string   $type
+     * @param int|null $rootPageId
+     * @param bool     $checkPermissions
+     *
+     * @return Entry|null
      */
-    public function getTypes()
+    public function getEntry(string $type, int $rootPageId = null, bool $checkPermissions = true): ?Entry
     {
-        return $this->types;
-    }
+        $cacheKey = 'entry_'.$type.'_'.$rootPageId;
 
-    /**
-     * Get the link
-     *
-     * @param string $type
-     * @param int    $rootPageId
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function getLink($type, $rootPageId = null)
-    {
-        $entry = $this->fetchEntry($type, $rootPageId);
-
-        // Generate the URL for internal link
-        if ($this->isInternalLink($entry) && ($pageModel = $this->fetchPageModel($entry)) !== null) {
-            return $pageModel->getFrontendUrl();
+        if (!array_key_exists($cacheKey, $this->cache)) {
+            $this->cache[$cacheKey] = $this->createEntry($type, $rootPageId);
         }
 
-        return $entry['link'];
-    }
+        /** @var Entry $entry */
+        $entry = $this->cache[$cacheKey];
 
-    /**
-     * Get the title
-     *
-     * @param string $type
-     * @param int    $rootPageId
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function getTitle($type, $rootPageId = null)
-    {
-        $entry = $this->fetchEntry($type, $rootPageId);
-        $title = $entry['title'];
-
-        // Use the page title for internal link
-        if (!$title && $this->isInternalLink($entry) && ($pageModel = $this->fetchPageModel($entry)) !== null) {
-            $title = $pageModel->pageTitle ?: $pageModel->title;
+        // Return null if the entry has no link
+        if (!$entry->hasLink()) {
+            return null;
         }
 
-        return $title;
-    }
-
-    /**
-     * Get the link
-     *
-     * @param string $type
-     * @param int    $rootPageId
-     *
-     * @return PageModel
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function getPageModel($type, $rootPageId = null)
-    {
-        $entry = $this->fetchEntry($type, $rootPageId);
-
-        if (!$this->isInternalLink($entry)) {
-            throw new \InvalidArgumentException(sprintf('The entry "%s" is not an internal link', $type));
+        // Return null if the permissions are insufficient
+        if ($checkPermissions && !$this->checkPermissions($entry)) {
+            return null;
         }
 
-        return $this->fetchPageModel($entry);
+        return $entry;
     }
 
     /**
-     * Return true if the registry has entry
+     * Return true if the registry has entry.
      *
-     * @param string $type
-     * @param int    $rootPageId
-     * @param bool   $checkPermission
+     * @param string   $type
+     * @param int|null $rootPageId
+     * @param bool     $checkPermissions
      *
      * @return bool
      */
-    public function hasEntry($type, $rootPageId = null, $checkPermission = true)
+    public function hasEntry(string $type, int $rootPageId = null, bool $checkPermissions = true): bool
     {
-        try {
-            $entry = $this->fetchEntry($type, $rootPageId);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        // Check the permission
-        if ($checkPermission && !$this->checkPermission($entry)) {
-            return false;
-        }
-
-        return $entry['link'] ? true : false;
+        return $this->getEntry($type, $rootPageId, $checkPermissions) !== null;
     }
 
     /**
-     * Check the permission
+     * Check the permissions.
      *
-     * @param array $entry
+     * @param Entry $entry
      *
      * @return bool
      */
-    private function checkPermission(array $entry)
+    public function checkPermissions(Entry $entry): bool
     {
-        if (!$this->isInternalLink($entry)) {
+        if (!$entry->isInternal()) {
             return true;
         }
 
-        if (($pageModel = $this->fetchPageModel($entry)) === null) {
+        if (($pageModel = $entry->getPageModel()) === null) {
             return false;
         }
 
         $pageModel->loadDetails();
 
-        // Check if user is logged in
-        if (!FE_USER_LOGGED_IN && $pageModel->protected && !BE_USER_LOGGED_IN) {
+        // Return true for the unprotected pages
+        if (!$pageModel->protected) {
+            return true;
+        }
+
+        // Return false if there is no user logged in
+        if (($token = $this->tokenStorage->getToken()) === null) {
             return false;
         }
 
-        // Check the user groups if the page is protected
-        if ($pageModel->protected && !BE_USER_LOGGED_IN) {
-            $groups = $pageModel->groups; // required for empty()
+        $user = $token->getUser();
 
-            if (!is_array($groups) || empty($groups) || !count(array_intersect($groups,
-                    FrontendUser::getInstance()->groups))
-            ) {
-                return false;
-            }
+        // Return false if the user is not coming from Contao
+        if (!$user instanceof FrontendUser) {
+            return false;
+        }
+
+        $groups = $pageModel->groups;
+
+        // Return false if the user has no access to the page
+        if (!is_array($groups) || empty($groups) || count(array_intersect($groups, $user->groups)) < 1) {
+            return false;
         }
 
         return true;
     }
 
     /**
-     * Fetch the entry based on type and root page ID
+     * Get all registered types.
+     *
+     * @return array
+     */
+    public function getAllTypes(): array
+    {
+        return $this->types;
+    }
+
+    /**
+     * Create the entry object.
+     *
+     * @param string   $type
+     * @param int|null $rootPageId
+     *
+     * @return Entry
+     */
+    private function createEntry(string $type, int $rootPageId = null): Entry
+    {
+        $entry = new Entry($type, $this->fetchEntryData($type, $rootPageId));
+
+        /** @var PageModel $adapter */
+        $adapter = $this->framework->getAdapter(PageModel::class);
+
+        // Set the page model for the entry
+        if ($entry->isInternal() && ($pageModel = $adapter->findByPk($entry->getPageId())) !== null) {
+            $entry->setPageModel($pageModel);
+        }
+
+        return $entry;
+    }
+
+    /**
+     * Fetch the entry based on type and root page ID.
      *
      * @param string $type
      * @param int    $rootPageId
      *
-     * @return array
+     * @throws InvalidEntryException
+     * @throws InvalidTypeException
+     * @throws MissingRootPageException
      *
-     * @throws \InvalidArgumentException
+     * @return array
      */
-    private function fetchEntry($type, $rootPageId = null)
+    private function fetchEntryData(string $type, int $rootPageId = null): array
     {
-        $this->validateType($type);
+        if (!in_array($type, $this->types, true)) {
+            throw new InvalidTypeException(sprintf('The entry type "%s" does not exist', $type));
+        }
 
         // Try to get the current root page ID
         if ($rootPageId === null) {
-            $rootPageId = $GLOBALS['objPage']->rootId;
+            if (!isset($GLOBALS['objPage'])) {
+                throw new MissingRootPageException('There is no global page object');
+            }
+
+            $rootPageId = $GLOBALS['objPage']->rootId ?: null;
 
             if ($rootPageId === null) {
-                throw new \InvalidArgumentException('There is no root page ID');
+                throw new MissingRootPageException('There is no root page ID');
             }
         }
 
-        $registry = $this->fetchRegistryByPageRootId($rootPageId);
-        $entries  = deserialize($registry['entries'], true);
+        $registry = $this->fetchRegistryData($rootPageId);
+        $entries = $registry['entries'];
 
         if (!array_key_exists($type, $entries)) {
-            throw new \InvalidArgumentException(sprintf(
-                'The entry type "%s" does not exist in registry "%s"',
-                $type,
-                $registry['name']
-            ));
+            throw new InvalidEntryException(sprintf('The entry type "%s" does not exist in registry "%s"', $type, $registry['name']));
         }
 
         return $entries[$type];
     }
 
     /**
-     * Fetch the registry by page root ID
+     * Fetch the registry data by page root ID.
      *
      * @param int $rootPageId
      *
+     * @throws MissingRegistryException
+     *
      * @return array
-     *
-     * @throws \InvalidArgumentException
      */
-    private function fetchRegistryByPageRootId($rootPageId)
+    private function fetchRegistryData(int $rootPageId): array
     {
-        $associatedRegistry = $this->db->fetchColumn('SELECT cfg_link_registry FROM tl_page WHERE id=?', [$rootPageId]);
+        $cacheKey = 'registry_'.$rootPageId;
 
-        if ($associatedRegistry === false) {
-            throw new \InvalidArgumentException(sprintf(
-                'There is no link registry associated with root page ID %s',
-                $rootPageId
-            ));
+        if (!array_key_exists($cacheKey, $this->cache)) {
+            $associatedRegistry = $this->db->fetchColumn('SELECT cfg_link_registry FROM tl_page WHERE id=?', [$rootPageId]);
+
+            if ($associatedRegistry === false) {
+                throw new MissingRegistryException(sprintf('There is no link registry associated with root page ID %s', $rootPageId));
+            }
+
+            $registry = $this->db->fetchAssoc('SELECT * FROM tl_cfg_link_registry WHERE id=?', [$associatedRegistry]);
+
+            if ($registry === false) {
+                throw new MissingRegistryException(sprintf('There is no link registry with ID %s', $associatedRegistry));
+            }
+
+            $registry['entries'] = StringUtil::deserialize($registry['entries'], true);
+            $this->cache[$cacheKey] = $registry;
         }
 
-        $registry = $this->db->fetchAssoc('SELECT * FROM tl_cfg_link_registry WHERE id=?', [$associatedRegistry]);
-
-        if ($registry === false) {
-            throw new \InvalidArgumentException(sprintf('There is no link registry with ID %s', $associatedRegistry));
-        }
-
-        return $registry;
-    }
-
-    /**
-     * Validate the type
-     *
-     * @param string $type
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function validateType($type)
-    {
-        if (!in_array($type, $this->types, true)) {
-            throw new \InvalidArgumentException(sprintf('The link type "%s" does not exist', $type));
-        }
-    }
-
-    /**
-     * Return true if the link is internal
-     *
-     * @param array $entry
-     *
-     * @return bool
-     */
-    private function isInternalLink(array $entry)
-    {
-        return $this->fetchPageId($entry) !== null;
-    }
-
-    /**
-     * Fetch the page model
-     *
-     * @param array $entry
-     *
-     * @return PageModel|null
-     */
-    private function fetchPageModel(array $entry)
-    {
-        $pageId = $this->fetchPageId($entry);
-
-        if ($pageId === null) {
-            return null;
-        }
-
-        return PageModel::findPublishedById($pageId);
-    }
-
-    /**
-     * Get the page ID from the link URL if it's an insert tag
-     *
-     * @param array $entry
-     *
-     * @return int|null
-     */
-    private function fetchPageId(array $entry)
-    {
-        preg_match('/{{link_url::(\d+)}}/', $entry['link'], $matches);
-
-        if (!is_numeric($matches[1])) {
-            return null;
-        }
-
-        return (int)$matches[1];
+        return $this->cache[$cacheKey];
     }
 }
