@@ -2,7 +2,7 @@
     "name": "codefog/contao-link-registry",
     "description": "Link Registry bundle for Contao Open Source CMS",
     "keywords": ["contao", "link", "registry"],
-    "type": "contao-module",
+    "type": "contao-bundle",
     "license": "MIT",
     "authors": [
         {
