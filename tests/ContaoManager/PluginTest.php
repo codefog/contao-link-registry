@@ -10,7 +10,7 @@
 
 namespace Codefog\LinkRegistryBundle\Test\ContaoManager;
 
-use Codefog\LinkRegistryBundle\CodefogLinkRegistryBundle;
+use Codefog\LinkRegistryBundle\LinkRegistryBundle;
 use Codefog\LinkRegistryBundle\ContaoManager\Plugin;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
@@ -34,7 +34,7 @@ class PluginTest extends TestCase
 
         static::assertCount(1, $bundles);
         static::assertInstanceOf(BundleConfig::class, $config);
-        static::assertEquals(CodefogLinkRegistryBundle::class, $config->getName());
+        static::assertEquals(LinkRegistryBundle::class, $config->getName());
         static::assertEquals([ContaoCoreBundle::class], $config->getLoadAfter());
     }
 }
