@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Codefog\LinkRegistryBundle\ContaoManager;
 
-use Codefog\LinkRegistryBundle\CodefogLinkRegistryBundle;
+use Codefog\LinkRegistryBundle\LinkRegistryBundle;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
@@ -26,7 +26,7 @@ class Plugin implements BundlePluginInterface
     public function getBundles(ParserInterface $parser)
     {
         return [
-            BundleConfig::create(CodefogLinkRegistryBundle::class)->setLoadAfter([ContaoCoreBundle::class]),
+            BundleConfig::create(LinkRegistryBundle::class)->setLoadAfter([ContaoCoreBundle::class]),
         ];
     }
 }
