@@ -235,7 +235,7 @@ class LinkRegistry
             }
         }
 
-        $registry = $this->fetchRegistryData($rootPageId);
+        $registry = $this->fetchRegistryData((int) $rootPageId);
         $entries = $registry['entries'];
 
         if (!array_key_exists($type, $entries)) {
