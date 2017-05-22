@@ -15,7 +15,7 @@ For example, the login page can be referenced from various places. Instead of cr
 (either ```{{link_*}}``` insert tags or ```jumpTo``` pages) you simply define it in one place and then refer to it
 using the link registry.
 
-![](docs/images/preview.png)
+![](docs/images/backend-registry.png)
 
 ## Documentation
 
