@@ -1,13 +1,13 @@
 <?php
 
-/**
- * link-registry extension for Contao Open Source CMS
+declare(strict_types=1);
+
+/*
+ * Link Registry Bundle for Contao Open Source CMS.
  *
- * Copyright (C) 2011-2016 Codefog
- *
- * @author  Codefog <http://codefog.pl>
- * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
- * @license LGPL
+ * @copyright  Copyright (c) 2017, Codefog
+ * @author     Codefog <https://codefog.pl>
+ * @license    MIT
  */
 
 namespace Codefog\LinkRegistryBundle\DependencyInjection;
@@ -20,11 +20,12 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 class CodefogLinkRegistryExtension extends ConfigurableExtension
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('listener.yml');
         $loader->load('services.yml');
 
         $container->setParameter('codefog_link_registry.types', $mergedConfig['types']);

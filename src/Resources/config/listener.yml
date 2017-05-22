@@ -1,0 +1,11 @@
+services:
+    codefog_link_registry.listener.data_container:
+        class: Codefog\LinkRegistryBundle\EventListener\DataContainerListener
+        arguments:
+            - '@database_connection'
+            - '@codefog_link_registry'
+
+    codefog_link_registry.listener.insert_tags:
+        class: Codefog\LinkRegistryBundle\EventListener\InsertTagsListener
+        arguments:
+            - '@codefog_link_registry'

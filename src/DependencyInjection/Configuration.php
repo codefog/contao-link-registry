@@ -1,13 +1,13 @@
 <?php
 
-/**
- * link-registry extension for Contao Open Source CMS
+declare(strict_types=1);
+
+/*
+ * Link Registry Bundle for Contao Open Source CMS.
  *
- * Copyright (C) 2011-2016 Codefog
- *
- * @author  Codefog <http://codefog.pl>
- * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
- * @license LGPL
+ * @copyright  Copyright (c) 2017, Codefog
+ * @author     Codefog <https://codefog.pl>
+ * @license    MIT
  */
 
 namespace Codefog\LinkRegistryBundle\DependencyInjection;
@@ -18,12 +18,12 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('codefog_link_registry');
+        $rootNode = $treeBuilder->root('codefog_link_registry');
 
         $rootNode
             ->children()

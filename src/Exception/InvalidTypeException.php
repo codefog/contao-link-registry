@@ -8,10 +8,8 @@
  * @license    MIT
  */
 
-namespace Codefog\LinkRegistryBundle;
+namespace Codefog\LinkRegistryBundle\Exception;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-
-class CodefogLinkRegistryBundle extends Bundle
+class InvalidTypeException extends \InvalidArgumentException
 {
 }

@@ -1,28 +1,30 @@
 <?php
 
-/**
- * link-registry extension for Contao Open Source CMS
+/*
+ * Link Registry Bundle for Contao Open Source CMS.
  *
- * Copyright (C) 2011-2016 Codefog
- *
- * @author  Codefog <http://codefog.pl>
- * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
- * @license LGPL
+ * @copyright  Copyright (c) 2017, Codefog
+ * @author     Codefog <https://codefog.pl>
+ * @license    MIT
  */
 
 /**
- * Extend the palettes
+ * Extend the palettes.
  */
-$GLOBALS['TL_DCA']['tl_page']['palettes']['root'] .= ';{cfg_link_registry_legend:hide},cfg_link_registry';
+\Contao\CoreBundle\DataContainer\PaletteManipulator::create()
+    ->addLegend('cfg_link_registry_legend', 'title_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_AFTER, true)
+    ->addField('cfg_link_registry', 'cfg_link_registry_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('root', 'tl_page');
 
-/**
+/*
  * Add the fields
  */
 $GLOBALS['TL_DCA']['tl_page']['fields']['cfg_link_registry'] = [
-    'label'      => &$GLOBALS['TL_LANG']['tl_page']['cfg_link_registry'],
-    'exclude'    => true,
-    'inputType'  => 'select',
+    'label' => &$GLOBALS['TL_LANG']['tl_page']['cfg_link_registry'],
+    'exclude' => true,
+    'flag' => 1,
+    'inputType' => 'select',
     'foreignKey' => 'tl_cfg_link_registry.name',
-    'eval'       => ['includeBlankOption' => true, 'tl_class' => 'w50'],
-    'sql'        => "int(10) unsigned NOT NULL default '0'",
+    'eval' => ['includeBlankOption' => true, 'tl_class' => 'w50'],
+    'sql' => ['type' => 'integer', 'unsigned' => true],
 ];

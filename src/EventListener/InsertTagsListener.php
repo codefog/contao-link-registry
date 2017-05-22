@@ -1,18 +1,19 @@
 <?php
 
-/**
- * link-registry extension for Contao Open Source CMS
+declare(strict_types=1);
+
+/*
+ * Link Registry Bundle for Contao Open Source CMS.
  *
- * Copyright (C) 2011-2016 Codefog
- *
- * @author  Codefog <http://codefog.pl>
- * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
- * @license LGPL
+ * @copyright  Copyright (c) 2017, Codefog
+ * @author     Codefog <https://codefog.pl>
+ * @license    MIT
  */
 
 namespace Codefog\LinkRegistryBundle\EventListener;
 
 use Codefog\LinkRegistryBundle\LinkRegistry;
+use Contao\StringUtil;
 
 class InsertTagsListener
 {
@@ -32,15 +33,15 @@ class InsertTagsListener
     }
 
     /**
-     * Replace the insert tags
+     * On replace the insert tags.
      *
      * @param string $tag
      *
      * @return string|bool
      */
-    public function replace($tag)
+    public function onReplace(string $tag)
     {
-        $chunks = trimsplit('::', $tag);
+        $chunks = StringUtil::trimsplit('::', $tag);
 
         if ($chunks[0] === 'cfg_link_registry') {
             try {
@@ -56,28 +57,24 @@ class InsertTagsListener
     }
 
     /**
-     * Parse the insert tag
+     * Parse the insert tag.
      *
      * @param string $type
      * @param string $param
      *
-     * @return string|bool
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return string|bool
      */
-    private function parse($type, $param)
+    private function parse(string $type, string $param)
     {
         switch ($param) {
-            case 'link':
             case 'url':
-                return $this->linkRegistry->getLink($type);
-
+                return $this->linkRegistry->getEntry($type)->getUrl();
             case 'href':
-                return ampersand($this->linkRegistry->getLink($type));
-
+                return ampersand($this->linkRegistry->getEntry($type)->getUrl());
             case 'title':
-                return $this->linkRegistry->getTitle($type);
-                break;
+                return $this->linkRegistry->getEntry($type)->getTitle();
         }
 
         return false;

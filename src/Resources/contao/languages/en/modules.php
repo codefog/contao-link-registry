@@ -1,16 +1,14 @@
 <?php
 
-/**
- * link-registry extension for Contao Open Source CMS
+/*
+ * Link Registry Bundle for Contao Open Source CMS.
  *
- * Copyright (C) 2011-2016 Codefog
- *
- * @author  Codefog <http://codefog.pl>
- * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
- * @license LGPL
+ * @copyright  Copyright (c) 2017, Codefog
+ * @author     Codefog <https://codefog.pl>
+ * @license    MIT
  */
 
 /**
- * Backend modules
+ * Backend modules.
  */
 $GLOBALS['TL_LANG']['MOD']['cfg_link_registry'] = ['Link registries', 'Create and manage link registries.'];

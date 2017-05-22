@@ -1,0 +1,13 @@
+{
+    "config": {
+        "targetFolder": "src/Resources/public",
+        "styles": [
+            "src/Resources/public/widget.css"
+        ]
+    },
+    "dependencies": {
+        "gulp": "^3.9.1",
+        "gulp-clean-css": "^3.0.3",
+        "gulp-rename": "^1.2.2"
+    }
+}

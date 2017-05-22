@@ -8,10 +8,13 @@
  * @license    MIT
  */
 
-namespace Codefog\LinkRegistryBundle;
-
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-
-class CodefogLinkRegistryBundle extends Bundle
+class Model
 {
+    public function __get($key)
+    {
+    }
+
+    public function findByPk()
+    {
+    }
 }

@@ -8,10 +8,9 @@
  * @license    MIT
  */
 
-namespace Codefog\LinkRegistryBundle;
-
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-
-class CodefogLinkRegistryBundle extends Bundle
+class User
 {
+    public function __get($key)
+    {
+    }
 }
