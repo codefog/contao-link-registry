@@ -93,7 +93,7 @@ $GLOBALS['TL_DCA']['tl_cfg_link_registry'] = [
             'label' => &$GLOBALS['TL_LANG']['tl_cfg_link_registry']['entries'],
             'exclude' => true,
             'inputType' => 'cfg_link_registry',
-            'options_callback' => ['cfg_link_registry.listener.data_container', 'getLinkTypes'],
+            'options_callback' => ['codefog_link_registry.listener.data_container', 'getLinkTypes'],
             'reference' => &$GLOBALS['TL_LANG']['tl_cfg_link_registry']['types'],
             'sql' => ['type' => 'blob'],
         ],

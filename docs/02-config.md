@@ -11,7 +11,7 @@ Setup your desired page types in the file:
 
 ```yaml
 # app/config/config.yml
-cfg_link_registry:
+codefog_link_registry:
     types: ["app_login", "app_logout", "app_profile"]
 ```
 

@@ -12,6 +12,6 @@ namespace Codefog\LinkRegistryBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class LinkRegistryBundle extends Bundle
+class CodefogLinkRegistryBundle extends Bundle
 {
 }

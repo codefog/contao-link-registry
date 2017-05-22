@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-class LinkRegistryExtension extends ConfigurableExtension
+class CodefogLinkRegistryExtension extends ConfigurableExtension
 {
     /**
      * {@inheritdoc}
@@ -28,6 +28,6 @@ class LinkRegistryExtension extends ConfigurableExtension
         $loader->load('listener.yml');
         $loader->load('services.yml');
 
-        $container->setParameter('cfg_link_registry.types', $mergedConfig['types']);
+        $container->setParameter('codefog_link_registry.types', $mergedConfig['types']);
     }
 }

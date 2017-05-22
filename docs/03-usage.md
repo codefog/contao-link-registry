@@ -10,7 +10,7 @@
 Here is the example how to use the registry in the project source files:
 
 ```php
-$linkRegistry = $container->get('cfg_link_registry');
+$linkRegistry = $container->get('codefog_link_registry');
 
 if ($linkRegistry->hasEntry('app_login')) {
     $entry = $linkRegistry->getEntry('app_login');

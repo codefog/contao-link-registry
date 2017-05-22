@@ -1,8 +1,8 @@
 services:
-    cfg_link_registry:
+    codefog_link_registry:
         class: Codefog\LinkRegistryBundle\LinkRegistry
         arguments:
             - '@contao.framework'
             - '@database_connection'
             - '@security.token_storage'
-            - '%cfg_link_registry.types%'
+            - '%codefog_link_registry.types%'
