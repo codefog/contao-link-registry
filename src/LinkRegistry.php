@@ -261,7 +261,7 @@ class LinkRegistry
         if (!array_key_exists($cacheKey, $this->cache)) {
             $associatedRegistry = $this->db->fetchColumn('SELECT cfg_link_registry FROM tl_page WHERE id=?', [$rootPageId]);
 
-            if ($associatedRegistry === false) {
+            if (!$associatedRegistry) {
                 throw new MissingRegistryException(sprintf('There is no link registry associated with root page ID %s', $rootPageId));
             }
 
