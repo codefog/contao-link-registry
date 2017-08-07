@@ -23,4 +23,4 @@ $GLOBALS['BE_FFL']['cfg_link_registry'] = 'Codefog\LinkRegistryBundle\Widget\Lin
 /*
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['codefog_link_registry.insert_tags', 'onReplace'];
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['codefog_link_registry.listener.insert_tags', 'onReplace'];
