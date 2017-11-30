@@ -25,8 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Codefog\\LinkRegistryBundle\\": "src",
-            "Codefog\\LinkRegistryBundle\\Test\\": "tests"
+            "Codefog\\LinkRegistryBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codefog\\LinkRegistryBundle\\Test\\": "tests/"
         }
     },
     "extra": {
