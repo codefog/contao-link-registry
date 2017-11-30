@@ -1,7 +1,7 @@
 # Link Registry Bundle extension for Contao Open Source CMS
 
 [![](https://img.shields.io/packagist/v/codefog/contao-link-registry.svg)](https://packagist.org/packages/codefog/contao-link-registry)
-[![](https://img.shields.io/packagist/l/codefog/contao-link-registry.svg)](https://packagist.org/packages/codefog/contao-link-registry)
+[![](https://img.shields.io/packagist/l/codefog/contao-link-registry.svg)](https://github.com/codefog/contao-link-registry/blob/master/LICENSE.txt)
 [![](https://img.shields.io/packagist/dt/codefog/contao-link-registry.svg)](https://packagist.org/packages/codefog/contao-link-registry)
 [![](https://img.shields.io/travis/codefog/contao-link-registry/master.svg)](https://travis-ci.org/codefog/contao-link-registry/)
 [![](https://img.shields.io/coveralls/codefog/contao-link-registry/master.svg)](https://coveralls.io/github/codefog/contao-link-registry)
