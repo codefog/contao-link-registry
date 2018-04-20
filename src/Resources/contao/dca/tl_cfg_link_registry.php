@@ -79,7 +79,7 @@ $GLOBALS['TL_DCA']['tl_cfg_link_registry'] = [
             'sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true],
         ],
         'tstamp' => [
-            'sql' => ['type' => 'integer', 'unsigned' => true],
+            'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ],
         'name' => [
             'label' => &$GLOBALS['TL_LANG']['tl_cfg_link_registry']['name'],
@@ -87,7 +87,7 @@ $GLOBALS['TL_DCA']['tl_cfg_link_registry'] = [
             'search' => true,
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'maxlength' => 255],
-            'sql' => ['type' => 'string'],
+            'sql' => ['type' => 'string', 'default' => ''],
         ],
         'entries' => [
             'label' => &$GLOBALS['TL_LANG']['tl_cfg_link_registry']['entries'],
@@ -95,7 +95,7 @@ $GLOBALS['TL_DCA']['tl_cfg_link_registry'] = [
             'inputType' => 'cfg_link_registry',
             'options_callback' => ['codefog_link_registry.listener.data_container', 'getLinkTypes'],
             'reference' => &$GLOBALS['TL_LANG']['tl_cfg_link_registry']['types'],
-            'sql' => ['type' => 'blob'],
+            'sql' => ['type' => 'blob', 'notnull' => false],
         ],
     ],
 ];
