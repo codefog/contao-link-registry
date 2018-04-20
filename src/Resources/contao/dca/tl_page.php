@@ -26,5 +26,5 @@ $GLOBALS['TL_DCA']['tl_page']['fields']['cfg_link_registry'] = [
     'inputType' => 'select',
     'foreignKey' => 'tl_cfg_link_registry.name',
     'eval' => ['includeBlankOption' => true, 'tl_class' => 'w50'],
-    'sql' => ['type' => 'integer', 'unsigned' => true],
+    'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
 ];
