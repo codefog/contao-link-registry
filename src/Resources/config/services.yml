@@ -1,6 +1,7 @@
 services:
     codefog_link_registry:
         class: Codefog\LinkRegistryBundle\LinkRegistry
+        public: true
         arguments:
             - '@database_connection'
             - '@contao.framework'
