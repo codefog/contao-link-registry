@@ -11,10 +11,14 @@
 /**
  * Extend the palettes.
  */
-\Contao\CoreBundle\DataContainer\PaletteManipulator::create()
+$palette = \Contao\CoreBundle\DataContainer\PaletteManipulator::create()
     ->addLegend('cfg_link_registry_legend', 'title_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_AFTER, true)
     ->addField('cfg_link_registry', 'cfg_link_registry_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('root', 'tl_page');
+
+if (isset($GLOBALS['TL_DCA']['tl_page']['palettes']['rootfallback'])) {
+    $palette->applyToPalette('rootfallback', 'tl_page');
+}
 
 /*
  * Add the fields
