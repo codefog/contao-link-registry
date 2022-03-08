@@ -24,10 +24,10 @@ class DataContainerListenerTest extends TestCase
      */
     private $listener;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $connection = $this->createMock(Connection::class);
-        $connection->method('fetchAssoc')->willReturn(['name' => 'Foobar', 'id' => 123]);
+        $connection->method('fetchAssociative')->willReturn(['name' => 'Foobar', 'id' => 123]);
 
         $linkRegistry = $this->createMock(LinkRegistry::class);
         $linkRegistry->method('getAllTypes')->willReturn(['foo', 'bar']);

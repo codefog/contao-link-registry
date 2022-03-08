@@ -31,7 +31,7 @@ class InsertTagsListenerTest extends TestCase
      */
     private $listener;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->linkRegistry = $this->createMock(LinkRegistry::class);
         $this->listener = new InsertTagsListener($this->linkRegistry);

@@ -259,13 +259,13 @@ class LinkRegistry
         $cacheKey = 'registry_'.$rootPageId;
 
         if (!array_key_exists($cacheKey, $this->cache)) {
-            $associatedRegistry = $this->db->fetchColumn('SELECT cfg_link_registry FROM tl_page WHERE id=?', [$rootPageId]);
+            $associatedRegistry = $this->db->fetchOne('SELECT cfg_link_registry FROM tl_page WHERE id=?', [$rootPageId]);
 
             if (!$associatedRegistry) {
                 throw new MissingRegistryException(sprintf('There is no link registry associated with root page ID %s', $rootPageId));
             }
 
-            $registry = $this->db->fetchAssoc('SELECT * FROM tl_cfg_link_registry WHERE id=?', [$associatedRegistry]);
+            $registry = $this->db->fetchAssociative('SELECT * FROM tl_cfg_link_registry WHERE id=?', [$associatedRegistry]);
 
             if ($registry === false) {
                 throw new MissingRegistryException(sprintf('There is no link registry with ID %s', $associatedRegistry));
