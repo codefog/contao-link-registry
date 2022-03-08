@@ -49,7 +49,7 @@ class DataContainerListener
     public function generateLabel(array $data): string
     {
         $type = $GLOBALS['TL_DCA']['tl_cfg_link_registry_entry']['fields']['type']['reference'][$data['type']];
-        $page = $this->db->fetchAssoc('SELECT id, title FROM tl_page WHERE id=?', [$data['page']]);
+        $page = $this->db->fetchAssociative('SELECT id, title FROM tl_page WHERE id=?', [$data['page']]);
 
         return $type.' <span style="padding-left:3px;color:#b3b3b3;">['.$page['name'].', ID: '.$page['id'].']</span>';
     }

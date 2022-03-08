@@ -20,19 +20,16 @@ use Codefog\LinkRegistryBundle\Exception\MissingRootPageException;
 use Codefog\LinkRegistryBundle\LinkRegistry;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
-use Contao\CoreBundle\Security\Authentication\ContaoToken;
+use Contao\TestCase\ContaoTestCase;
 use Contao\FrontendUser;
 use Contao\PageModel;
 use Doctrine\DBAL\Connection;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
-require_once __DIR__.'/Fixtures/Model.php';
-require_once __DIR__.'/Fixtures/User.php';
-
-class LinkRegistryTest extends TestCase
+class LinkRegistryTest extends ContaoTestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject|Connection
@@ -49,14 +46,14 @@ class LinkRegistryTest extends TestCase
      */
     private $tokenStorage;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->connection = $this->createMock(Connection::class);
         $this->framework = $this->createMock(ContaoFramework::class);
         $this->tokenStorage = $this->createMock(TokenStorage::class);
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         unset($GLOBALS['objPage']);
     }
@@ -74,8 +71,8 @@ class LinkRegistryTest extends TestCase
 
     public function testGetEntry()
     {
-        $this->connection->method('fetchColumn')->willReturn(123);
-        $this->connection->method('fetchAssoc')->willReturn(['entries' => [
+        $this->connection->method('fetchOne')->willReturn(123);
+        $this->connection->method('fetchAssociative')->willReturn(['entries' => [
             'foo' => ['link' => 'http://domain.tld', 'title' => 'Foo'],
             'bar' => ['link' => '{{link_url::123}}', 'title' => ''],
             'baz' => ['link' => '{{link_url::456}}', 'title' => 'Baz'],
@@ -98,11 +95,18 @@ class LinkRegistryTest extends TestCase
         static::assertEquals('Foo', $entry->getTitle());
 
         // Internal link
-        $pageMock = $this->createMock(PageModel::class);
-        $pageMock->method('findByPk')->willReturn($pageMock);
-        $pageMock->method('getFrontendUrl')->willReturn('bar.html');
-        $pageMock->method('__get')->willReturn('Bar');
-        $this->framework->method('getAdapter')->willReturn($pageMock);
+        $pageModel = $this->mockClassWithProperties(PageModel::class);
+        $pageModel->method('getFrontendUrl')->willREturn('bar.html');
+        $pageModel->title = 'Bar';
+
+
+        $pageModelAdapter = $this->mockAdapter(['findByPk']);
+        $pageModelAdapter
+            ->method('findByPk')
+            ->willReturn($pageModel)
+        ;
+
+        $this->framework->method('getAdapter')->willReturn($pageModelAdapter);
 
         $entry = $linkRegistry->getEntry('bar', 123, false);
 
@@ -111,20 +115,20 @@ class LinkRegistryTest extends TestCase
         static::assertTrue($entry->hasLink());
         static::assertTrue($entry->isInternal());
         static::assertEquals(123, $entry->getPageId());
-        static::assertEquals($pageMock, $entry->getPageModel());
+        static::assertEquals($pageModel, $entry->getPageModel());
         static::assertEquals('{{link_url::123}}', $entry->getLink());
         static::assertEquals('bar.html', $entry->getUrl());
         static::assertEquals('Bar', $entry->getTitle());
 
         // Internal link when permissions fail
-        $pageMock->protected = true;
+        $pageModel->protected = true;
         static::assertNull($linkRegistry->getEntry('baz', 123));
     }
 
     public function testHasEntry()
     {
-        $this->connection->method('fetchColumn')->willReturn(123);
-        $this->connection->method('fetchAssoc')->willReturn(['entries' => [
+        $this->connection->method('fetchOne')->willReturn(123);
+        $this->connection->method('fetchAssociative')->willReturn(['entries' => [
             'foo' => ['link' => 'http://domain.tld', 'title' => ''],
             'bar' => ['link' => '', 'title' => ''],
         ]]);
@@ -159,7 +163,7 @@ class LinkRegistryTest extends TestCase
 
     public function testMissingAssociatedRegistryError()
     {
-        $this->connection->method('fetchColumn')->willReturn(false);
+        $this->connection->method('fetchOne')->willReturn(false);
         $this->expectException(MissingRegistryException::class);
         $this->createGlobalPageObject(123);
         $linkRegistry = $this->createLinkRegistryInstance(['foo']);
@@ -168,8 +172,8 @@ class LinkRegistryTest extends TestCase
 
     public function testMissingRegistryError()
     {
-        $this->connection->method('fetchColumn')->willReturn(123);
-        $this->connection->method('fetchAssoc')->willReturn(false);
+        $this->connection->method('fetchOne')->willReturn(123);
+        $this->connection->method('fetchAssociative')->willReturn(false);
         $this->expectException(MissingRegistryException::class);
         $this->createGlobalPageObject(123);
         $linkRegistry = $this->createLinkRegistryInstance(['foo']);
@@ -178,8 +182,8 @@ class LinkRegistryTest extends TestCase
 
     public function testInvalidEntryError()
     {
-        $this->connection->method('fetchColumn')->willReturn(123);
-        $this->connection->method('fetchAssoc')->willReturn([
+        $this->connection->method('fetchOne')->willReturn(123);
+        $this->connection->method('fetchAssociative')->willReturn([
             'name' => '',
             'entries' => [
                 'bar' => ['link' => '', 'title' => ''],
@@ -262,7 +266,7 @@ class LinkRegistryTest extends TestCase
             [] // groups
         );
 
-        $tokenMock = $this->createMock(ContaoToken::class);
+        $tokenMock = $this->createMock(TokenInterface::class);
         $tokenMock->method('getUser')->willReturn($this->createMock(FrontendUser::class));
 
         $this->tokenStorage->method('getToken')->willReturn($tokenMock);
@@ -286,7 +290,7 @@ class LinkRegistryTest extends TestCase
         $frontendUserMock = $this->createMock(FrontendUser::class);
         $frontendUserMock->method('__get')->willReturn([3, 4]);
 
-        $tokenMock = $this->createMock(ContaoToken::class);
+        $tokenMock = $this->createMock(TokenInterface::class);
         $tokenMock->method('getUser')->willReturn($frontendUserMock);
 
         $this->tokenStorage->method('getToken')->willReturn($tokenMock);
@@ -310,7 +314,7 @@ class LinkRegistryTest extends TestCase
         $frontendUserMock = $this->createMock(FrontendUser::class);
         $frontendUserMock->method('__get')->willReturn([2, 3]);
 
-        $tokenMock = $this->createMock(ContaoToken::class);
+        $tokenMock = $this->createMock(TokenInterface::class);
         $tokenMock->method('getUser')->willReturn($frontendUserMock);
 
         $this->tokenStorage->method('getToken')->willReturn($tokenMock);
